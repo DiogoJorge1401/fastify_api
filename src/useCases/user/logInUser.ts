@@ -2,9 +2,9 @@ import { LogInUserInput } from '@/schemas/user'
 import { verifyPassword } from '@/utils/hash'
 import { prisma } from '@/utils/prisma'
 import { RequestError } from '@/errors/RequestError'
-import { app } from '@/app'
+import { JWT } from '@fastify/jwt'
 
-export const logInUser = async (data: LogInUserInput) => {
+export const logInUser = async (signJWT: JWT['sign'], data: LogInUserInput) => {
   const { password: candidatePassword, email } = data
 
   const user = await prisma.user.findFirst({ where: { email } })
@@ -21,7 +21,7 @@ export const logInUser = async (data: LogInUserInput) => {
 
   const { password, salt, ...rest } = user
 
-  const accessToken = app.jwt.sign(rest, {
+  const accessToken = signJWT(rest, {
     expiresIn: '30m',
   })
 

@@ -19,7 +19,7 @@ export class UserController {
     rep: FastifyReply
   ) {
     const data = req.body
-    const result = await logInUser(data)
+    const result = await logInUser(req.jwt.sign, data)
     return rep.status(200).send(result)
   }
 
